@@ -8,15 +8,15 @@
     font-size: 80px;
 }
 
-.App-btn-buy-container {
-    padding-top: 8px;
-    text-align: center;
-}
-
-.App-select-token, .App-btn-buy-container {
+.App-convert-token, .App-btn-buy-container {
     padding-right: 8px;
     padding-left: 8px;
     padding-top: 8px;
+}
+
+.App-btn-buy-container {
+    padding-top: 28px;
+    text-align: center;
 }
 
 .App-select-token .dropdown-item {
@@ -25,4 +25,8 @@
 
 .App-select-token .btn, .App-select-token .dropdown-menu, .App-btn-buy-container .btn {
     width: 100%;
+}
+
+.App-convert-token {
+
 }

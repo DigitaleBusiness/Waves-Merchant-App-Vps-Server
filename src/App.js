@@ -5,10 +5,11 @@ import './App.css';
 class App extends Component {
     constructor() {
         super();
-        const merchantConfig = window.WAVES_MERCHANT_CONFIG ? window.WAVES_MERCHANT_CONFIG : {
+        let merchantConfig = window.WAVES_MERCHANT_CONFIG ? window.WAVES_MERCHANT_CONFIG : {
             allowed_tokens: ['WAVES', 'TEST', 'HELLO'],
             recipient_wallet: '----'
         };
+        merchantConfig = this.prepareMerchantConfig(merchantConfig);
         const itemConfig = this.getParams();
         console.log(itemConfig);
 
@@ -16,6 +17,7 @@ class App extends Component {
             // todo show error is configs not ok
             merchantConfigValidation: this.isValidMerchantConfig(merchantConfig),
             itemConfigValidation: this.isValidItemConfig(itemConfig),
+
             itemConfig: itemConfig,
             wavesKeeper: window.WavesKeeper,
             allowedTokens: merchantConfig.allowed_tokens,
@@ -23,7 +25,15 @@ class App extends Component {
             sendAssetId: merchantConfig.allowed_tokens[0],
             sendTokensAmount: '1.567',
             sendFeeAmount: '0.001',
-            wavesRecipient: merchantConfig.recipient_wallet
+            wavesRecipient: merchantConfig.recipient_wallet,
+            exchangeRates: {
+                'USD': {
+                    'WAVES': '2.88', 'TEST': '3', 'HELLO': '10', 'BOOM': '1'
+                },
+                'RUB': {
+                    'WAVES': '177', 'TEST': '210', 'HELLO': '700', 'BOOM': '7'
+                }
+            }
         };
 
         this.checkWavesKeeperInterval = setInterval(() => {
@@ -34,6 +44,12 @@ class App extends Component {
             }
         }, 100);
     }
+
+    prepareMerchantConfig = (config) => {
+        config.allowed_tokens = config.allowed_tokens.map(item => item.toUpperCase());
+
+        return config;
+    };
 
     replaceCurrencySymbol = (currency) => {
         currency = currency.toLowerCase();
@@ -150,6 +166,15 @@ class App extends Component {
         });
     };
 
+    calculateTokenPrice = () => {
+        const price = this.state.itemConfig.item_price_amount;
+        const currency = this.state.itemConfig.item_price_currency.toUpperCase();
+        const rate = this.state.exchangeRates[currency][this.state.sendAssetId];
+        //console.log(price, currency, rate);
+
+        return (price / rate).toFixed(6);
+    };
+
     render() {
         let allowedTokens = this.state.allowedTokens.map((item, index) =>
             <button key={index} className="dropdown-item" onClick={() => this.changePayToken(item)}>{item}</button>
@@ -163,22 +188,28 @@ class App extends Component {
                     </div>
                 </header>
 
-                <div className="App-select-token">
-                    <button
-                        type="button"
-                        className="btn btn-primary dropdown-toggle"
-                        data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">
-                        {this.state.sendAssetId}
-                    </button>
-                    <div className="dropdown-menu">
-                        {allowedTokens}
+                <div className="input-group App-convert-token">
+                    <input
+                        type="text"
+                        className="form-control"
+                        aria-label="Text input with dropdown button"
+                        disabled
+                        value={this.calculateTokenPrice()}
+                    />
+                    <div className="input-group-append">
+                        <button className="btn btn-outline-secondary dropdown-toggle" type="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {this.state.sendAssetId}
+                        </button>
+                        <div className="dropdown-menu">
+                            {allowedTokens}
+                        </div>
                     </div>
                 </div>
 
                 <div className="App-btn-buy-container">
                     <button
-                        className={`btn btn-success`}
+                        className={`btn btn-success btn-lg`}
                         disabled={!this.state.wavesKeeper}
                         onClick={this.onBuy}>
                         Buy
