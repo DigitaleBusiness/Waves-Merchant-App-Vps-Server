@@ -144,7 +144,16 @@ class App extends Component {
             });
     };
 
+    changePayToken = (token) => {
+        this.setState({
+            sendAssetId: token
+        });
+    };
+
     render() {
+        let allowedTokens = this.state.allowedTokens.map((item, index) =>
+            <button key={index} className="dropdown-item" onClick={() => this.changePayToken(item)}>{item}</button>
+        );
         return (
             <div className="App">
                 <header className="App-header">
@@ -154,6 +163,19 @@ class App extends Component {
                     </div>
                 </header>
 
+                <div className="App-select-token">
+                    <button
+                        type="button"
+                        className="btn btn-primary dropdown-toggle"
+                        data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        {this.state.sendAssetId}
+                    </button>
+                    <div className="dropdown-menu">
+                        {allowedTokens}
+                    </div>
+                </div>
+
                 <div className="App-btn-buy-container">
                     <button
                         className={`btn btn-success`}
@@ -161,7 +183,6 @@ class App extends Component {
                         onClick={this.onBuy}>
                         Buy
                     </button>
-
                 </div>
 
             </div>
