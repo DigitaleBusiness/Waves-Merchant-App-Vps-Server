@@ -32,3 +32,17 @@
   }
 }
 */
+
+.App-header {
+    background: linear-gradient(to right, #6b94ff 0%, #1f5af6 100%);
+}
+
+.App-original-price {
+    color: white;
+    text-align: center;
+    font-size: 80px;
+}
+
+.App-btn-buy-container{
+    text-align: center;
+}
