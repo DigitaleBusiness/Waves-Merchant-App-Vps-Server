@@ -35,6 +35,19 @@ class App extends Component {
         }, 100);
     }
 
+    replaceCurrencySymbol = (currency) => {
+        currency = currency.toLowerCase();
+        const symbols = {
+            'usd': '$',
+            'eur': '€',
+            'rub': '₽',
+            'rur': '₽',
+            'cny': '¥',
+        };
+
+        return symbols[currency] ? symbols[currency] : currency.toUpperCase();
+    };
+
     getParams = () => {
         //http://localhost:3001/?item_price_amount=111&item_price_currency=USD&item_target_token=WAVES&item_id=999&item_description=Some%20description&order_id=10
         let result = {};
@@ -137,7 +150,7 @@ class App extends Component {
                 <header className="App-header">
                     {/*<img src={logo} className="App-logo" alt="logo" />*/}
                     <div className="App-original-price">
-                        $99
+                        {this.replaceCurrencySymbol(this.state.itemConfig.item_price_currency)} {this.state.itemConfig.item_price_amount}
                     </div>
                 </header>
 
