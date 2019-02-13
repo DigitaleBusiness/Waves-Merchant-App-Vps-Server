@@ -1,3 +1,11 @@
+.App-icon-container {
+    text-align: center;
+}
+
+.App-exchange-image {
+    width: 80px;
+}
+
 .App-header {
     background: linear-gradient(to right, #6b94ff 0%, #1f5af6 100%);
 }
@@ -5,7 +13,28 @@
 .App-original-price {
     color: white;
     text-align: center;
-    font-size: 80px;
+    font-size: 40px;
+}
+
+.App-item-title {
+    color: #1f5af6;
+    text-align: center;
+    font-size: 40px;
+    background-color: white;
+}
+
+/*.App-original-price .dropdown-toggle {
+    color: white;
+}*/
+
+.App-result {
+    text-align: center;
+    padding-bottom: 18px;
+}
+
+.App-result-price {
+    font-size: 50px;
+    color: white;
 }
 
 .App-convert-token, .App-btn-buy-container {
@@ -19,14 +48,23 @@
     text-align: center;
 }
 
-.App-select-token .dropdown-item {
-    text-align: center;
-}
-
-.App-select-token .btn, .App-select-token .dropdown-menu, .App-btn-buy-container .btn {
+.App-btn-buy-container .btn {
     width: 100%;
 }
 
 .App-convert-token {
 
 }
+
+.btn-select-token {
+    width: 100%;
+}
+
+.App-select-token {
+    margin-right: 8px;
+    margin-left: 8px;
+}
+
+/*.App-select-token .dropdown-menu {
+    width: 100%;
+}*/

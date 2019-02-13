@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-//import logo from './logo.svg';
+import coin from './coin.svg';
 import './App.css';
 
 class App extends Component {
@@ -19,6 +19,7 @@ class App extends Component {
             itemConfigValidation: this.isValidItemConfig(itemConfig),
 
             itemConfig: itemConfig,
+            merchantConfig: merchantConfig,
             wavesKeeper: window.WavesKeeper,
             allowedTokens: merchantConfig.allowed_tokens,
             //wavesEnabledClass: this.state.wavesKeeper ? 'waves-enabled' : 'waves-disabled disabled'
@@ -72,6 +73,7 @@ class App extends Component {
             'item_price_currency',
             'item_target_token',
             'item_id',
+            'item_title',
             'item_description',
             'order_id',
         ];
@@ -176,43 +178,51 @@ class App extends Component {
     };
 
     render() {
-        let allowedTokens = this.state.allowedTokens.map((item, index) =>
-            <button key={index} className="dropdown-item" onClick={() => this.changePayToken(item)}>{item}</button>
+        let allowedTokens = this.state.allowedTokens.map((item, index) => {
+                let classes = 'dropdown-item';
+                let isActive = item === this.state.sendAssetId;
+                if (isActive) {
+                    classes += ' active';
+                }
+
+                return <button key={index} className={classes} onClick={() => this.changePayToken(item)}>{item}</button>
+            }
         );
         return (
             <div className="App">
                 <header className="App-header">
-                    {/*<img src={logo} className="App-logo" alt="logo" />*/}
+                    {this.state.itemConfig.item_title &&
+                    <p className="App-item-title">{this.state.itemConfig.item_title}</p>}
+
                     <div className="App-original-price">
                         {this.replaceCurrencySymbol(this.state.itemConfig.item_price_currency)} {this.state.itemConfig.item_price_amount}
                     </div>
-                </header>
 
-                <div className="input-group App-convert-token">
-                    <input
-                        type="text"
-                        className="form-control"
-                        aria-label="Text input with dropdown button"
-                        disabled
-                        value={this.calculateTokenPrice()}
-                    />
-                    <div className="input-group-append">
-                        <button className="btn btn-outline-secondary dropdown-toggle" type="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            {this.state.sendAssetId}
-                        </button>
-                        <div className="dropdown-menu">
-                            {allowedTokens}
+                    <div className="App-icon-container">
+                        <img src={coin} className="App-exchange-image" alt="Exchange"/>
+                    </div>
+
+                    <div className="App-result">
+                        <span className="App-result-price">{this.calculateTokenPrice()}</span>
+                        <div className="App-select-token">
+                            <button className="btn btn-outline-light btn-lg dropdown-toggle btn-select-token" type="button"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {this.state.sendAssetId}
+                            </button>
+                            <div className="dropdown-menu">
+                                {allowedTokens}
+                            </div>
                         </div>
                     </div>
-                </div>
+                </header>
+
 
                 <div className="App-btn-buy-container">
                     <button
                         className={`btn btn-success btn-lg`}
                         disabled={!this.state.wavesKeeper}
                         onClick={this.onBuy}>
-                        Buy
+                        {this.state.merchantConfig.text_buy_button.replace('{token}', this.state.sendAssetId)}
                     </button>
                 </div>
 
