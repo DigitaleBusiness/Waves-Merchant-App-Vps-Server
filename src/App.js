@@ -12,6 +12,8 @@ class App extends Component {
         merchantConfig = this.prepareMerchantConfig(merchantConfig);
         const itemConfig = this.getParams();
         console.log(itemConfig);
+        // todo receive rates if null
+        let exchangeRates = merchantConfig.exchange_rates ? merchantConfig.exchange_rates : null;
 
         this.state = {
             // todo show error is configs not ok
@@ -24,18 +26,13 @@ class App extends Component {
             allowedTokens: merchantConfig.allowed_tokens,
             //wavesEnabledClass: this.state.wavesKeeper ? 'waves-enabled' : 'waves-disabled disabled'
             sendAssetId: merchantConfig.allowed_tokens[0],
-            sendTokensAmount: '1.567',
+            sendTokensAmount: '0',
             sendFeeAmount: '0.001',
             wavesRecipient: merchantConfig.recipient_wallet,
-            exchangeRates: {
-                'USD': {
-                    'WAVES': '2.88', 'TEST': '3', 'HELLO': '10', 'BOOM': '1'
-                },
-                'RUB': {
-                    'WAVES': '177', 'TEST': '210', 'HELLO': '700', 'BOOM': '7'
-                }
-            }
+            exchangeRates: exchangeRates
         };
+
+        //this.calculateTokenPrice();
 
         this.checkWavesKeeperInterval = setInterval(() => {
             console.log(window.WavesKeeper);
@@ -164,14 +161,15 @@ class App extends Component {
 
     changePayToken = (token) => {
         this.setState({
-            sendAssetId: token
+            sendAssetId: token,
+            sendTokensAmount: this.calculateTokenPrice(token)
         });
     };
 
-    calculateTokenPrice = () => {
+    calculateTokenPrice = (sendAssetId = this.state.sendAssetId) => {
         const price = this.state.itemConfig.item_price_amount;
         const currency = this.state.itemConfig.item_price_currency.toUpperCase();
-        const rate = this.state.exchangeRates[currency][this.state.sendAssetId];
+        const rate = this.state.exchangeRates[currency][sendAssetId];
         //console.log(price, currency, rate);
 
         return (price / rate).toFixed(6);
@@ -188,6 +186,7 @@ class App extends Component {
                 return <button key={index} className={classes} onClick={() => this.changePayToken(item)}>{item}</button>
             }
         );
+
         return (
             <div className="App">
                 <header className="App-header">
@@ -203,9 +202,10 @@ class App extends Component {
                     </div>
 
                     <div className="App-result">
-                        <span className="App-result-price">{this.calculateTokenPrice()}</span>
+                        <span className="App-result-price">{this.state.sendTokensAmount}</span>
                         <div className="App-select-token">
-                            <button className="btn btn-outline-light btn-lg dropdown-toggle btn-select-token" type="button"
+                            <button className="btn btn-outline-light btn-lg dropdown-toggle btn-select-token"
+                                    type="button"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 {this.state.sendAssetId}
                             </button>
