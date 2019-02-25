@@ -1,8 +1,23 @@
-console.log('ok');
-window.onload = function () {
-    let iframe = document.createElement('iframe');
-    //iframe.style.display = "none";
-    iframe.src = 'http://localhost:3001/';
-    iframe.height = '300px';
-    document.body.appendChild(iframe);
-};
+class WavesMerchant {
+    constructor() {
+        this.iframe = null;
+    }
+
+    init(selector, params) {
+        const selectors = document.querySelectorAll(selector);
+        if (selectors.length) {
+            selectors.forEach(item => item.onclick = () => {
+                //this.iframe.style.display = "block";
+                if (this.iframe) {
+                    return;
+                }
+
+                this.iframe = document.createElement('iframe');
+                //this.iframe.style.display = "none";
+                this.iframe.src = `http://localhost:3001/?item_price_amount=${params.price}&item_price_currency=USD`;
+                this.iframe.height = '400px';
+                document.body.appendChild(this.iframe);
+            });
+        }
+    }
+}

@@ -8,8 +8,18 @@
 <div class="item">
     <div class="title">Virtual item</div>
     <div class="price">$99</div>
+    <button class="buy-waves-merchant">Buy for WAVES</button>
 </div>
 
 <script src="dev-merchant.js"></script>
+<script>
+    window.onload = () => {
+        const merchant = new WavesMerchant();
+        console.log(merchant);
+        merchant.init('.buy-waves-merchant', {
+            price: '99.99'
+        });
+    };
+</script>
 </body>
 </html>

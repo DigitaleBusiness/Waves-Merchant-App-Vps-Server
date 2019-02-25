@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import coin from './coin.svg';
 import './App.css';
+import Helper from './Helper';
+import WavesDataService from "./WavesDataService";
 
 class App extends Component {
     constructor() {
@@ -9,16 +11,16 @@ class App extends Component {
             allowed_tokens: ['WAVES', 'TEST', 'HELLO'],
             recipient_wallet: '----'
         };
-        merchantConfig = this.prepareMerchantConfig(merchantConfig);
-        const itemConfig = this.getParams();
+        merchantConfig = Helper.prepareMerchantConfig(merchantConfig);
+        const itemConfig = Helper.getParams();
         console.log(itemConfig);
         // todo receive rates if null
         let exchangeRates = merchantConfig.exchange_rates ? merchantConfig.exchange_rates : null;
+        this.wavesDataService = new WavesDataService();
 
         this.state = {
-            // todo show error is configs not ok
-            merchantConfigValidation: this.isValidMerchantConfig(merchantConfig),
-            itemConfigValidation: this.isValidItemConfig(itemConfig),
+            merchantConfigValidation: Helper.isValidMerchantConfig(merchantConfig),
+            itemConfigValidation: Helper.isValidItemConfig(itemConfig),
 
             itemConfig: itemConfig,
             merchantConfig: merchantConfig,
@@ -26,97 +28,28 @@ class App extends Component {
             allowedTokens: merchantConfig.allowed_tokens,
             //wavesEnabledClass: this.state.wavesKeeper ? 'waves-enabled' : 'waves-disabled disabled'
             sendAssetId: merchantConfig.allowed_tokens[0],
-            sendTokensAmount: '0',
+            sendTokensAmount: '...',
             sendFeeAmount: '0.001',
             wavesRecipient: merchantConfig.recipient_wallet,
             exchangeRates: exchangeRates
         };
 
-        //this.calculateTokenPrice();
+        Helper.calculateTokenPrice(itemConfig, exchangeRates, merchantConfig.allowed_tokens[0], this.wavesDataService)
+            .then(sendTokensAmount => this.setState({sendTokensAmount}));
 
         this.checkWavesKeeperInterval = setInterval(() => {
-            console.log(window.WavesKeeper);
+            //console.log(window.WavesKeeper);
             if (window.WavesKeeper) {
                 this.setState({wavesKeeper: window.WavesKeeper});
                 clearInterval(this.checkWavesKeeperInterval);
             }
         }, 100);
+
+        /*this.wavesDataService.getPriceByTickers('USD', 'EUR')
+            .then(data => {
+                console.log(data);
+            });*/
     }
-
-    prepareMerchantConfig = (config) => {
-        config.allowed_tokens = config.allowed_tokens.map(item => item.toUpperCase());
-
-        return config;
-    };
-
-    replaceCurrencySymbol = (currency) => {
-        currency = currency.toLowerCase();
-        const symbols = {
-            'usd': '$',
-            'eur': '€',
-            'rub': '₽',
-            'rur': '₽',
-            'cny': '¥',
-        };
-
-        return symbols[currency] ? symbols[currency] : currency.toUpperCase();
-    };
-
-    getParams = () => {
-        //http://localhost:3001/?item_price_amount=111&item_price_currency=USD&item_target_token=WAVES&item_id=999&item_description=Some%20description&order_id=10
-        let result = {};
-        const keys = [
-            'item_price_amount',
-            'item_price_currency',
-            'item_target_token',
-            'item_id',
-            'item_title',
-            'item_description',
-            'order_id',
-        ];
-        let url = new URL(window.location);
-        const params = new URLSearchParams(url.search);
-        for (let key in keys) {
-            key = keys[key];
-            result[key] = params.get(key);
-        }
-
-        return result;
-    };
-
-    isValidItemConfig = (config) => {
-        let isValid = true;
-        let reasons = [];
-
-        if (!config.item_price_amount || config.item_price_amount <= 0) {
-            isValid = false;
-            reasons.push('item_price_amount');
-        }
-
-        return {
-            is_valid: isValid,
-            reasons
-        };
-    };
-
-    isValidMerchantConfig = (config) => {
-        let isValid = true;
-        let reasons = [];
-        if (!config.allowed_tokens || config.allowed_tokens.length === 0) {
-            isValid = false;
-            reasons.push('allowed_tokens');
-        }
-
-        if (!config.recipient_wallet || config.recipient_wallet.length !== 35) {
-            isValid = false;
-            reasons.push('recipient_wallet');
-        }
-
-        return {
-            is_valid: isValid,
-            reasons
-        };
-    };
 
     onBuy = () => {
         this.state.wavesKeeper.publicState()
@@ -162,20 +95,18 @@ class App extends Component {
     changePayToken = (token) => {
         this.setState({
             sendAssetId: token,
-            sendTokensAmount: this.calculateTokenPrice(token)
+            sendTokensAmount: '...'
         });
-    };
 
-    calculateTokenPrice = (sendAssetId = this.state.sendAssetId) => {
-        const price = this.state.itemConfig.item_price_amount;
-        const currency = this.state.itemConfig.item_price_currency.toUpperCase();
-        const rate = this.state.exchangeRates[currency][sendAssetId];
-        //console.log(price, currency, rate);
-
-        return (price / rate).toFixed(6);
+        Helper.calculateTokenPrice(this.state.itemConfig, this.state.exchangeRates, token, this.wavesDataService)
+            .then(sendTokensAmount => this.setState({sendTokensAmount}));
     };
 
     render() {
+        if (!this.state.itemConfigValidation.is_valid) {
+            return this.state.itemConfigValidation.reasons.map(error => <div>{error}</div>);
+        }
+
         let allowedTokens = this.state.allowedTokens.map((item, index) => {
                 let classes = 'dropdown-item';
                 let isActive = item === this.state.sendAssetId;
@@ -194,7 +125,7 @@ class App extends Component {
                     <p className="App-item-title">{this.state.itemConfig.item_title}</p>}
 
                     <div className="App-original-price">
-                        {this.replaceCurrencySymbol(this.state.itemConfig.item_price_currency)} {this.state.itemConfig.item_price_amount}
+                        {Helper.replaceCurrencySymbol(this.state.itemConfig.item_price_currency)} {this.state.itemConfig.item_price_amount}
                     </div>
 
                     <div className="App-icon-container">
