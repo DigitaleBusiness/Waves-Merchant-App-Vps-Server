@@ -38,7 +38,7 @@ export default class Helper {
         };
     };
 
-    static getParams = () => {
+    static getParams = (config) => {
         //http://localhost:3001/?item_price_amount=111&item_price_currency=USD&item_target_token=WAVES&item_id=999&item_description=Some%20description&order_id=10
         let result = {};
         const keys = [
@@ -58,7 +58,7 @@ export default class Helper {
         }
 
         if (!result['item_title']) {
-            result['item_title'] = 'Waves Merchant';
+            result['item_title'] = config.item_title ? config.item_title : 'Waves Merchant';
         }
 
         return result;

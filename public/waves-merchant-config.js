@@ -1,4 +1,5 @@
 const WAVES_MERCHANT_CONFIG = {
+    item_title:'WAVES Merchant',
     allowed_tokens: ['WAVES', 'ETH', 'WCT', 'BTC', 'LTC'],
     recipient_wallet: '----',
     text_buy_button: 'Buy for {token}',

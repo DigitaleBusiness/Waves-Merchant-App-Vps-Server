@@ -12,7 +12,7 @@ class App extends Component {
             recipient_wallet: '----'
         };
         merchantConfig = Helper.prepareMerchantConfig(merchantConfig);
-        const itemConfig = Helper.getParams();
+        const itemConfig = Helper.getParams(merchantConfig);
         console.log(itemConfig);
         let exchangeRates = merchantConfig.exchange_rates ? merchantConfig.exchange_rates : null;
         this.wavesDataService = new WavesDataService();
