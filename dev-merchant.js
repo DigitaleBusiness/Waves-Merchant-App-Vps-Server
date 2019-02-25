@@ -5,7 +5,8 @@ class WavesMerchant {
         this.iframeContainer = null;
         this.iframe = null;
         this.loader = null;
-        this.loaderImage = './public/loading_3.svg';
+        this.loaderImage = './public/img/loading_3.svg';
+        this.closeImage = './public/img/close.svg';
         let img = new Image();
         img.src = this.loaderImage;
     }
@@ -29,10 +30,6 @@ class WavesMerchant {
                 const url = `http://localhost:3001/?item_price_amount=${resultParams.price}&item_price_currency=${resultParams.currency}&item_title=${resultParams.title}`;
                 if (this.iframeContainer) {
                     this.iframeContainer.remove();
-                    /*this.iframe.src = url;
-                    this.iframeContainer.style.display = 'block';
-
-                    return;*/
                 }
 
                 this.loader = document.createElement('div');
@@ -42,13 +39,13 @@ class WavesMerchant {
                 this.iframeContainer = document.createElement('div');
                 this.iframeContainer.appendChild(this.loader);
                 let closeButton = document.createElement('img');
-                closeButton.src = './public/close.svg';
+                closeButton.src = this.closeImage;
                 closeButton.style = 'position: absolute; right: 51%; top: 3px; font-size: 50px; width: 30px; height: 30px';
                 closeButton.onclick = () => {
                     this.iframeContainer.style.display = "none";
                 };
                 //border: 1px solid lightgrey;
-                this.iframeContainer.style = ' border-radius: 3px; position: fixed; left: 50%; top: 0';
+                this.iframeContainer.style = 'border-radius: 3px; position: fixed; left: 50%; top: 5%';
                 this.iframe = document.createElement('iframe');
                 this.iframe.onload = () => {
                     this.loader.remove();
@@ -56,14 +53,13 @@ class WavesMerchant {
                 };
                 this.iframe.allowTransparency = false;
                 this.iframe.style.backgroundColor = 'white';
-                this.iframe.style = 'border: 0; border-radius: 3px; left: -50%; position: relative';
-                this.iframe.height = '510px';
-                this.iframe.width = this.width + 'px';
+                this.iframe.style = 'border: 0; border: 1px solid lightgrey; border-radius: 3px; left: -50%; position: relative';
+                this.iframe.height = `${this.height}px`;
+                this.iframe.width = `${this.width}px`;
 
                 document.body.appendChild(this.iframeContainer);
                 this.iframe.src = url;
                 this.iframeContainer.appendChild(this.iframe);
-
             });
         }
     }

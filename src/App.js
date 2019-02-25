@@ -151,7 +151,7 @@ class App extends Component {
 
                     <div className="App-result">
                         <span className="App-result-price">{this.getResultPrice()}</span>
-                        <div className="App-select-token">
+                        <div className="App-select-token dropup">
                             <button className="btn btn-outline-info btn-lg dropdown-toggle btn-select-token"
                                     type="button"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

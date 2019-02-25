@@ -1,6 +1,6 @@
 const WAVES_MERCHANT_CONFIG = {
-    item_title:'WAVES Merchant',
-    allowed_tokens: ['WAVES', 'ETH', 'WCT', 'BTC', 'LTC'],
+    item_title: 'WAVES Merchant',
+    allowed_tokens: ['WAVES', 'ETH', 'WCT', 'BTC'],
     recipient_wallet: '----',
     text_buy_button: 'Buy for {token}',
     waves_data_service: 'https://api.wavesplatform.com/',
