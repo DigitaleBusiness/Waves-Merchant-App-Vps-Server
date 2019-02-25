@@ -14,9 +14,9 @@ class App extends Component {
         merchantConfig = Helper.prepareMerchantConfig(merchantConfig);
         const itemConfig = Helper.getParams();
         console.log(itemConfig);
-        // todo receive rates if null
         let exchangeRates = merchantConfig.exchange_rates ? merchantConfig.exchange_rates : null;
         this.wavesDataService = new WavesDataService();
+        const defaultAssetTicker = merchantConfig.allowed_tokens[0];
 
         this.state = {
             merchantConfigValidation: Helper.isValidMerchantConfig(merchantConfig),
@@ -26,16 +26,18 @@ class App extends Component {
             merchantConfig: merchantConfig,
             wavesKeeper: window.WavesKeeper,
             allowedTokens: merchantConfig.allowed_tokens,
-            //wavesEnabledClass: this.state.wavesKeeper ? 'waves-enabled' : 'waves-disabled disabled'
-            sendAssetId: merchantConfig.allowed_tokens[0],
+            sendAssetTicker: defaultAssetTicker,
+            sendAssetId: '...',
             sendTokensAmount: '...',
             sendFeeAmount: '0.001',
             wavesRecipient: merchantConfig.recipient_wallet,
             exchangeRates: exchangeRates
         };
 
-        Helper.calculateTokenPrice(itemConfig, exchangeRates, merchantConfig.allowed_tokens[0], this.wavesDataService)
-            .then(sendTokensAmount => this.setState({sendTokensAmount}));
+        Helper.calculateTokenPrice(itemConfig, exchangeRates, defaultAssetTicker, this.wavesDataService)
+            .then(sendTokensAmount => this.setState({sendTokensAmount}))
+            .then(() => this.wavesDataService.getTickerId(defaultAssetTicker)
+                .then(sendAssetId => this.setState({sendAssetId})));
 
         this.checkWavesKeeperInterval = setInterval(() => {
             //console.log(window.WavesKeeper);
@@ -44,11 +46,6 @@ class App extends Component {
                 clearInterval(this.checkWavesKeeperInterval);
             }
         }, 100);
-
-        /*this.wavesDataService.getPriceByTickers('USD', 'EUR')
-            .then(data => {
-                console.log(data);
-            });*/
     }
 
     onBuy = () => {
@@ -76,12 +73,14 @@ class App extends Component {
                             tokens: this.state.sendTokensAmount
                         },
                         fee: {
-                            assetId: this.state.sendAssetId,
+                            //assetId: this.state.sendAssetId,
+                            assetId: 'WAVES',
                             tokens: this.state.sendFeeAmount
                         },
                         recipient: this.state.wavesRecipient
                     }
                 };
+                console.log(txData);
                 this.state.wavesKeeper.signAndPublishTransaction(txData)
                     .then((data) => {
                         //data - a line ready for sending to Waves network's node (server)
@@ -92,14 +91,30 @@ class App extends Component {
             });
     };
 
-    changePayToken = (token) => {
+    changePayToken = (ticker) => {
+        //console.log('Change to ' + ticker);
         this.setState({
-            sendAssetId: token,
+            sendAssetTicker: ticker,
             sendTokensAmount: '...'
         });
 
-        Helper.calculateTokenPrice(this.state.itemConfig, this.state.exchangeRates, token, this.wavesDataService)
+        this.wavesDataService.getTickerId(ticker)
+            .then(sendAssetId => this.setState({sendAssetId}));
+
+        Helper.calculateTokenPrice(this.state.itemConfig, this.state.exchangeRates, ticker, this.wavesDataService)
             .then(sendTokensAmount => this.setState({sendTokensAmount}));
+        //console.log(this.state);
+    };
+
+    getResultPrice = () => {
+        let result = Number(this.state.sendTokensAmount);
+        if (isNaN(result)) {
+            result = '...';
+        } else {
+            result = result.toFixed(6);
+        }
+
+        return result;
     };
 
     render() {
@@ -109,7 +124,7 @@ class App extends Component {
 
         let allowedTokens = this.state.allowedTokens.map((item, index) => {
                 let classes = 'dropdown-item';
-                let isActive = item === this.state.sendAssetId;
+                let isActive = item === this.state.sendAssetTicker;
                 if (isActive) {
                     classes += ' active';
                 }
@@ -120,40 +135,41 @@ class App extends Component {
 
         return (
             <div className="App">
-                <header className="App-header">
-                    {this.state.itemConfig.item_title &&
-                    <p className="App-item-title">{this.state.itemConfig.item_title}</p>}
+                {this.state.itemConfig.item_title && <header className="App-header">
+                    <p className="App-item-title">{this.state.itemConfig.item_title}</p>
+                </header>}
 
+                <div className="App-exchange-container">
                     <div className="App-original-price">
                         {Helper.replaceCurrencySymbol(this.state.itemConfig.item_price_currency)} {this.state.itemConfig.item_price_amount}
                     </div>
 
-                    <div className="App-icon-container">
+                    <div className="flourish">
                         <img src={coin} className="App-exchange-image" alt="Exchange"/>
+
                     </div>
 
                     <div className="App-result">
-                        <span className="App-result-price">{this.state.sendTokensAmount}</span>
+                        <span className="App-result-price">{this.getResultPrice()}</span>
                         <div className="App-select-token">
-                            <button className="btn btn-outline-light btn-lg dropdown-toggle btn-select-token"
+                            <button className="btn btn-outline-info btn-lg dropdown-toggle btn-select-token"
                                     type="button"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {this.state.sendAssetId}
+                                {this.state.sendAssetTicker}
                             </button>
                             <div className="dropdown-menu">
                                 {allowedTokens}
                             </div>
                         </div>
                     </div>
-                </header>
+                </div>
 
-
-                <div className="App-btn-buy-container">
+                <div className="App-btn-buy-container fixed-bottom">
                     <button
                         className={`btn btn-success btn-lg`}
                         disabled={!this.state.wavesKeeper}
                         onClick={this.onBuy}>
-                        {this.state.merchantConfig.text_buy_button.replace('{token}', this.state.sendAssetId)}
+                        {this.state.merchantConfig.text_buy_button.replace('{token}', this.state.sendAssetTicker)}
                     </button>
                 </div>
 

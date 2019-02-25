@@ -57,6 +57,10 @@ export default class Helper {
             result[key] = params.get(key);
         }
 
+        if (!result['item_title']) {
+            result['item_title'] = 'Waves Merchant';
+        }
+
         return result;
     };
 
@@ -83,23 +87,18 @@ export default class Helper {
         const price = itemConfig.item_price_amount;
         const currency = itemConfig.item_price_currency.toUpperCase();
         sendAssetId = sendAssetId.toUpperCase();
-        let rate = null;
 
         return (new Promise((resolve, reject) => {
             if (exchangeRates && exchangeRates[currency] && exchangeRates[currency][sendAssetId]) {
                 resolve(exchangeRates[currency][sendAssetId]);
             } else {
                 wavesDataService.getPriceByTickers(sendAssetId, currency)
-                    .then(result => {
-                        resolve(result);
-                    });
+                    .then(result => resolve(result))
+                    .catch(error => reject(error));
             }
-            //console.log(price, currency, rate);
-
-
         }))
             .then(rate => {
-                return (price / rate).toFixed(6);
+                return (price / rate).toFixed(8);
             });
     };
 }

@@ -1,26 +1,70 @@
+body {
+    /*background: linear-gradient(to right, #6b94ff 0%, #1f5af6 100%);*/
+    background-color: #f8f9fb;
+}
+
 .App-icon-container {
     text-align: center;
 }
 
 .App-exchange-image {
     width: 80px;
+    vertical-align: middle;
+
 }
+
+.flourish {
+    display: block;
+    overflow: hidden;
+    text-align: center;
+}
+
+.flourish:before,
+.flourish:after {
+    content: "";
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+    width: 50%;
+    border-top: 1px solid lightgrey;
+}
+
+.flourish:before {
+    right: 0.5em;
+    margin-left: -50%;
+}
+
+.flourish:after {
+    left: 0.5em;
+    margin-right: -50%;
+}
+
+/*img {
+    vertical-align: middle;
+}*/
 
 .App-header {
     background: linear-gradient(to right, #6b94ff 0%, #1f5af6 100%);
-}
-
-.App-original-price {
     color: white;
-    text-align: center;
-    font-size: 40px;
 }
 
 .App-item-title {
-    color: #1f5af6;
+    /*color: #1f5af6;*/
     text-align: center;
-    font-size: 40px;
-    background-color: white;
+    /*font-size: 40px;*/
+    /*background-color: white;*/
+    border-bottom: 1px solid lightgrey;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-size: 2rem;
+}
+
+.App-original-price {
+    /*color: white;*/
+    text-align: center;
+    /*font-size: 40px;*/
+    color: grey;
+    font-size: 2rem;
 }
 
 /*.App-original-price .dropdown-toggle {
@@ -33,8 +77,9 @@
 }
 
 .App-result-price {
-    font-size: 50px;
-    color: white;
+    /*font-size: 50px;*/
+    /*color: white;*/
+    font-size: 2.5rem;
 }
 
 .App-convert-token, .App-btn-buy-container {
@@ -57,7 +102,7 @@
 }
 
 .btn-select-token {
-    width: 100%;
+    /*width: 100%;*/
 }
 
 .App-select-token {
@@ -68,3 +113,11 @@
 /*.App-select-token .dropdown-menu {
     width: 100%;
 }*/
+
+.App-btn-buy-container {
+    margin-bottom: 8px;
+}
+
+.App-exchange-container{
+    vertical-align: center;
+}
