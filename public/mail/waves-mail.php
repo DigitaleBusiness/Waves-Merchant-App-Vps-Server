@@ -1,7 +1,8 @@
 <?php
-$emailOwner = 'bel.temp.mail@ya.ru';
-$targetWallet = '3P3mWFmANJ8xkM1UY3CWHYqsqfm62v2g23x';
-$apiUrl = 'https://api.wavesplatform.com/v0/transactions/all/';
+$config = include './config.php';
+$emailOwner = $config['emailOwner'];
+$targetWallet = $config['targetWallet'];
+$apiUrl = $config['apiUrl'];
 header('Access-Control-Allow-Origin: *');
 
 function answer($text, $isError = true)
@@ -46,7 +47,7 @@ if (isTransactionExists($transaction)) {
 
 sleep(10);
 
-$url = $apiUrl . $transaction;
+$url = $apiUrl . 'v0/transactions/all/' . $transaction;
 $json = file_get_contents($url);
 $json = json_decode($json, true);
 if ($json && isset($json['data']) && isset($json['data']['type'])) {

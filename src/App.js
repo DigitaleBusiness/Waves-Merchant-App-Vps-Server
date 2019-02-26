@@ -3,6 +3,7 @@ import coin from './coin.svg';
 import './App.css';
 import Helper from './Helper';
 import WavesDataService from "./WavesDataService";
+import Setup from "./Setup";
 
 class App extends Component {
     constructor() {
@@ -19,8 +20,8 @@ class App extends Component {
         const defaultAssetTicker = merchantConfig.allowed_tokens[0];
 
         this.state = {
-            merchantConfigValidation: Helper.isValidMerchantConfig(merchantConfig),
-            itemConfigValidation: Helper.isValidItemConfig(itemConfig),
+            merchantConfigValidation: Helper.valideMerchantConfig(merchantConfig),
+            itemConfigValidation: Helper.validateItemConfig(itemConfig),
 
             itemConfig: itemConfig,
             merchantConfig: merchantConfig,
@@ -34,18 +35,22 @@ class App extends Component {
             exchangeRates: exchangeRates
         };
 
-        Helper.calculateTokenPrice(itemConfig, exchangeRates, defaultAssetTicker, this.wavesDataService)
-            .then(sendTokensAmount => this.setState({sendTokensAmount}))
-            .then(() => this.wavesDataService.getTickerId(defaultAssetTicker)
-                .then(sendAssetId => this.setState({sendAssetId})));
+        console.log(this.state);
 
-        this.checkWavesKeeperInterval = setInterval(() => {
-            //console.log(window.WavesKeeper);
-            if (window.WavesKeeper) {
-                this.setState({wavesKeeper: window.WavesKeeper});
-                clearInterval(this.checkWavesKeeperInterval);
-            }
-        }, 100);
+        if (this.state.merchantConfigValidation.is_valid && this.state.itemConfigValidation.is_valid) {
+            Helper.calculateTokenPrice(itemConfig, exchangeRates, defaultAssetTicker, this.wavesDataService)
+                .then(sendTokensAmount => this.setState({sendTokensAmount}))
+                .then(() => this.wavesDataService.getTickerId(defaultAssetTicker)
+                    .then(sendAssetId => this.setState({sendAssetId})));
+
+            this.checkWavesKeeperInterval = setInterval(() => {
+                //console.log(window.WavesKeeper);
+                if (window.WavesKeeper) {
+                    this.setState({wavesKeeper: window.WavesKeeper});
+                    clearInterval(this.checkWavesKeeperInterval);
+                }
+            }, 100);
+        }
     }
 
     onBuy = () => {
@@ -125,8 +130,10 @@ class App extends Component {
     };
 
     render() {
-        if (!this.state.itemConfigValidation.is_valid) {
-            return this.state.itemConfigValidation.reasons.map(error => <div>{error}</div>);
+        if (!this.state.itemConfigValidation.is_valid || !this.state.merchantConfigValidation.is_valid) {
+            return <Setup
+                itemConfigValidation={this.state.itemConfigValidation}
+                merchantConfigValidation={this.state.merchantConfigValidation}/>
         }
 
         let allowedTokens = this.state.allowedTokens.map((item, index) => {

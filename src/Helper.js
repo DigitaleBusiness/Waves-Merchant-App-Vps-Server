@@ -18,7 +18,7 @@ export default class Helper {
         return symbols[currency] ? symbols[currency] : currency.toUpperCase();
     };
 
-    static isValidItemConfig = (config) => {
+    static validateItemConfig = (config) => {
         let isValid = true;
         let reasons = [];
 
@@ -64,7 +64,7 @@ export default class Helper {
         return result;
     };
 
-    static isValidMerchantConfig = (config) => {
+    static valideMerchantConfig = (config) => {
         let isValid = true;
         let reasons = [];
         if (!config.allowed_tokens || config.allowed_tokens.length === 0) {

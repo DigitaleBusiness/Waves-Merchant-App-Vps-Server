@@ -1,5 +1,5 @@
 const WAVES_MERCHANT_CONFIG = {
-    notification_url: 'http://localhost:5000/mail/waves-mail.php',
+    notification_url: './mail/waves-mail.php',
     item_title: 'WAVES Merchant',
     allowed_tokens: ['WAVES', 'ETH', 'WCT', 'BTC'],
     recipient_wallet: '3P3mWFmANJ8xkM1UY3CWHYqsqfm62v2g23x',
