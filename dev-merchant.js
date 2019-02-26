@@ -40,7 +40,7 @@ class WavesMerchant {
                 this.iframeContainer.appendChild(this.loader);
                 let closeButton = document.createElement('img');
                 closeButton.src = this.closeImage;
-                closeButton.style = 'position: absolute; right: 51%; top: 3px; font-size: 50px; width: 30px; height: 30px';
+                closeButton.style = 'position: absolute; right: 52%; top: 5px; font-size: 50px; width: 30px; height: 30px';
                 closeButton.onclick = () => {
                     this.iframeContainer.style.display = "none";
                 };

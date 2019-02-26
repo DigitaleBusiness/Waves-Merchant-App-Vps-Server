@@ -84,9 +84,16 @@ class App extends Component {
                 this.state.wavesKeeper.signAndPublishTransaction(txData)
                     .then((data) => {
                         //data - a line ready for sending to Waves network's node (server)
+                        const json = JSON.parse(data);
+                        console.log(json);
+                        const url = `${this.state.merchantConfig.notification_url}?transaction_id=${json.id}`;
+                        fetch(url)
+                            .then(data => data.json())
+                            .then(data => console.log(data));
                     })
                     .catch((error) => {
                         //processing errors
+                        console.log(error);
                     });
             });
     };

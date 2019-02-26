@@ -1,7 +1,8 @@
 const WAVES_MERCHANT_CONFIG = {
+    notification_url: 'http://localhost:5000/mail/waves-mail.php',
     item_title: 'WAVES Merchant',
     allowed_tokens: ['WAVES', 'ETH', 'WCT', 'BTC'],
-    recipient_wallet: '----',
+    recipient_wallet: '3P3mWFmANJ8xkM1UY3CWHYqsqfm62v2g23x',
     text_buy_button: 'Buy for {token}',
     waves_data_service: 'https://api.wavesplatform.com/',
     /*exchange_rates: {
@@ -10,7 +11,6 @@ const WAVES_MERCHANT_CONFIG = {
             'ETH': '140',
             'WCT': '0.8',
             'BTC': '4000',
-            'LTC':'300'
         }
     }*/
 };

@@ -2,6 +2,7 @@
 $emailOwner = 'bel.temp.mail@ya.ru';
 $targetWallet = '3P3mWFmANJ8xkM1UY3CWHYqsqfm62v2g23x';
 $apiUrl = 'https://api.wavesplatform.com/v0/transactions/all/';
+header('Access-Control-Allow-Origin: *');
 
 function answer($text, $isError = true)
 {
@@ -39,33 +40,28 @@ if (!$transaction || mb_strlen($transaction) !== 44) {
     answer('Incorrect transaction ID ' . mb_strlen($transaction));
 }
 
+if (isTransactionExists($transaction)) {
+    answer('Transaction already saved', true);
+}
+
+sleep(10);
+
 $url = $apiUrl . $transaction;
 $json = file_get_contents($url);
 $json = json_decode($json, true);
-if ($json
-    && isset($json['data'])
-    && isset($json['type'])
-    && $json['type'] == 4
-    && isset($json['recipient'])
-    && mb_strtolower($json['recipient']) === mb_strtolower($transaction)) {
-    mail($emailOwner, 'WAVES Transaction', 'Just received transaction: https://wavesexplorer.com/tx/' . $transaction);
-
-    /*foreach ($json['data']['transfers'] as $transfer) {
-        if (mb_strtolower($transfer['recipient']) === mb_strtolower($targetWallet)) {
-            if (isTransactionExists($transaction)) {
-                answer('Transaction already saved', true);
-
-                break;
-            }
-
-            mail($emailOwner, 'WAVES Transaction', 'Just received transaction: https://wavesexplorer.com/tx/' . $transaction);
-            saveTransaction($transaction);
-            answer('ok', false);
-            break;
-        }
+if ($json && isset($json['data']) && isset($json['data']['type'])) {
+    $data = $json['data'];
+    if ($data['type'] != 4) {
+        answer('Incorrect type: ' . $data['type']);
     }
 
-    answer('Owner not found', true);*/
+    if (!isset($data['recipient']) || mb_strtolower($data['recipient']) !== mb_strtolower($targetWallet)) {
+        answer('Owner not found');
+    }
+
+    mail($emailOwner, 'WAVES Transaction', 'Just received transaction: https://wavesexplorer.com/tx/' . $transaction);
+    saveTransaction($transaction);
+    answer('ok', false);
 } else {
-    answer('Incorrect response or owner not found');
+    answer('Incorrect response');
 }
