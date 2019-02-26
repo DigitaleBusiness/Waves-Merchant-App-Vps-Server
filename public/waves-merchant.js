@@ -1,12 +1,12 @@
 class WavesMerchant {
-    constructor() {
+    constructor(path) {
         this.width = 300;
         this.height = 510;
         this.iframeContainer = null;
         this.iframe = null;
         this.loader = null;
-        this.loaderImage = './public/img/loading_3.svg';
-        this.closeImage = './public/img/close.svg';
+        this.loaderImage = path + 'img/loading_3.svg';
+        this.closeImage = path + 'img/close.svg';
         let img = new Image();
         img.src = this.loaderImage;
     }

@@ -32,7 +32,8 @@ class App extends Component {
             sendTokensAmount: '...',
             sendFeeAmount: '0.001',
             wavesRecipient: merchantConfig.recipient_wallet,
-            exchangeRates: exchangeRates
+            exchangeRates: exchangeRates,
+            isDisabledBuyButton: true
         };
 
         console.log(this.state);
@@ -40,8 +41,11 @@ class App extends Component {
         if (this.state.merchantConfigValidation.is_valid && this.state.itemConfigValidation.is_valid) {
             Helper.calculateTokenPrice(itemConfig, exchangeRates, defaultAssetTicker, this.wavesDataService)
                 .then(sendTokensAmount => this.setState({sendTokensAmount}))
-                .then(() => this.wavesDataService.getTickerId(defaultAssetTicker)
-                    .then(sendAssetId => this.setState({sendAssetId})));
+                .then(() => this.wavesDataService.getTickerId(defaultAssetTicker))
+                .then(sendAssetId => this.setState({
+                    sendAssetId,
+                    isDisabledBuyButton: false
+                }));
 
             this.checkWavesKeeperInterval = setInterval(() => {
                 //console.log(window.WavesKeeper);
@@ -107,20 +111,24 @@ class App extends Component {
         //console.log('Change to ' + ticker);
         this.setState({
             sendAssetTicker: ticker,
-            sendTokensAmount: '...'
+            sendTokensAmount: '...',
+            isDisabledBuyButton: true
         });
 
         this.wavesDataService.getTickerId(ticker)
             .then(sendAssetId => this.setState({sendAssetId}));
 
         Helper.calculateTokenPrice(this.state.itemConfig, this.state.exchangeRates, ticker, this.wavesDataService)
-            .then(sendTokensAmount => this.setState({sendTokensAmount}));
-        //console.log(this.state);
+            .then(sendTokensAmount => this.setState({
+                sendTokensAmount,
+                isDisabledBuyButton: false
+            }))
+            .catch(error => console.log(error));
     };
 
     getResultPrice = () => {
         let result = Number(this.state.sendTokensAmount);
-        if (isNaN(result)) {
+        if (isNaN(result) || !isFinite(result)) {
             result = '...';
         } else {
             result = result.toFixed(6);
@@ -181,7 +189,7 @@ class App extends Component {
                 <div className="App-btn-buy-container fixed-bottom">
                     <button
                         className={`btn btn-success btn-lg`}
-                        disabled={!this.state.wavesKeeper}
+                        disabled={!this.state.wavesKeeper || this.state.isDisabledBuyButton || this.getResultPrice() === '...'}
                         onClick={this.onBuy}>
                         {this.state.merchantConfig.text_buy_button.replace('{token}', this.state.sendAssetTicker)}
                     </button>

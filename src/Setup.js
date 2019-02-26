@@ -8,7 +8,8 @@ export default class Setup extends Component {
             wallet: '',
             scriptUrl: './mail/waves-mail.php',
             dataServiceUrl: 'https://api.wavesplatform.com/',
-            itemTitle: 'WAVES Merchant'
+            itemTitle: 'WAVES Merchant',
+            fullMerchantUrl: 'https://example.com/waves-merchant/'
         };
     }
 

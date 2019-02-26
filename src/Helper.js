@@ -94,7 +94,11 @@ export default class Helper {
             } else {
                 wavesDataService.getPriceByTickers(sendAssetId, currency)
                     .then(result => resolve(result))
-                    .catch(error => reject(error));
+                    .catch(error => {
+                        console.log('error');
+                        console.log(error);
+                        reject(error);
+                    });
             }
         }))
             .then(rate => {
