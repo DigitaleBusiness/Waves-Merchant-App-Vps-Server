@@ -19,7 +19,7 @@ class WavesMerchant {
         return loader;
     }
 
-    init(selector, params) {
+    init(selector, params = {}) {
         const selectors = document.querySelectorAll(selector);
         if (selectors.length) {
             selectors.forEach(item => item.onclick = (e) => {
