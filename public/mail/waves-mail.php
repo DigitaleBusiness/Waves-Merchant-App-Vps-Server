@@ -37,8 +37,8 @@ function isTransactionExists($transaction)
 }
 
 $transaction = isset($_GET['transaction_id']) ? $_GET['transaction_id'] : null;
-if (!$transaction || mb_strlen($transaction) !== 44) {
-    answer('Incorrect transaction ID ' . mb_strlen($transaction));
+if (!$transaction) {
+    answer('Incorrect transaction ID');
 }
 
 if (isTransactionExists($transaction)) {

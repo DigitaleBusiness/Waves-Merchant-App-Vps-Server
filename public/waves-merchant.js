@@ -1,5 +1,6 @@
 class WavesMerchant {
     constructor(path) {
+        this.path = path;
         this.width = 300;
         this.height = 510;
         this.iframeContainer = null;
@@ -27,7 +28,7 @@ class WavesMerchant {
                 console.log(dataset);
                 const resultParams = {...{title: ''}, ...params, ...dataset};
                 console.log(resultParams);
-                const url = `http://localhost:3001/?item_price_amount=${resultParams.price}&item_price_currency=${resultParams.currency}&item_title=${resultParams.title}`;
+                const url = `${this.path}/?item_price_amount=${resultParams.price}&item_price_currency=${resultParams.currency}&item_title=${resultParams.title}`;
                 if (this.iframeContainer) {
                     this.iframeContainer.remove();
                 }
