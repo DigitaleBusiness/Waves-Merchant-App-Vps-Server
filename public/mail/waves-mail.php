@@ -1,7 +1,7 @@
 <?php
 $config = include './config.php';
-$emailOwner = $config['emailOwner'];
-$targetWallet = $config['targetWallet'];
+$emailOwner = $config['support@bitdex.eu'];
+$targetWallet = $config['3PGZNhPeThgyGsxWHZPjRxLiDYjYjzopBqF'];
 $apiUrl = $config['apiUrl'];
 header('Access-Control-Allow-Origin: *');
 
@@ -25,7 +25,7 @@ function saveTransaction($transaction)
 {
     file_put_contents(getTransactionFileName($transaction), json_encode([
         'transaction' => $transaction,
-        'data' => date('Y-m-d H:i:s'),
+        'data' => date('d-m-Y H:i:s'),
     ]));
 
     return true;
